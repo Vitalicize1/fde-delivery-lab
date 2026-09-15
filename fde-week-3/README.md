@@ -10,6 +10,10 @@ psql supportpulse -f schema.sql
 psql supportpulse -f queries.sql
 ```
 
+## Open the dashboard
+
+The project includes a dependency-free static web dashboard in `dist/index.html`. Open it directly in a browser, or serve the project directory with any static file server.
+
 `schema.sql` is rerunnable: it rebuilds the demo tables, seed data, indexes, and views. `queries.sql` contains 20 reports covering workload, SLA, response time, resolution time, and customer health.
 
 ## Product questions answered
