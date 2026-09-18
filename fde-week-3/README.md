@@ -14,6 +14,8 @@ psql supportpulse -f queries.sql
 
 The project includes a dependency-free static web dashboard in `dist/index.html`. Open it directly in a browser, or serve the project directory with any static file server.
 
+The current dashboard build includes filterable queue views, a daily focus shortcut, clickable ticket detail drawers, and keyboard-friendly close behavior. It is ready for the next step: replacing the seeded browser data with API-backed PostgreSQL records.
+
 `schema.sql` is rerunnable: it rebuilds the demo tables, seed data, indexes, and views. `queries.sql` contains 20 reports covering workload, SLA, response time, resolution time, and customer health.
 
 ## Product questions answered
