@@ -1,0 +1,21 @@
+-- SupportPulse report queries. Run schema.sql first.
+SELECT * FROM ticket_summary ORDER BY id DESC;
+SELECT * FROM ticket_summary WHERE status <> 'closed' ORDER BY priority DESC, id;
+SELECT * FROM ticket_summary WHERE priority = 'urgent' AND status <> 'closed';
+SELECT id, subject, customer, priority FROM ticket_summary WHERE agent IS NULL;
+SELECT status, COUNT(*) AS ticket_count FROM tickets GROUP BY status ORDER BY ticket_count DESC;
+SELECT category, COUNT(*) AS ticket_count FROM tickets GROUP BY category ORDER BY ticket_count DESC;
+SELECT plan, COUNT(*) AS ticket_count FROM ticket_summary GROUP BY plan ORDER BY ticket_count DESC;
+SELECT customer, COUNT(*) AS ticket_count FROM ticket_summary GROUP BY customer HAVING COUNT(*) > 1 ORDER BY ticket_count DESC;
+SELECT agent, ROUND(AVG(first_response_minutes)::numeric, 1) AS avg_response_minutes FROM ticket_summary WHERE agent IS NOT NULL GROUP BY agent ORDER BY avg_response_minutes;
+SELECT category, ROUND(AVG(resolution_hours)::numeric, 1) AS avg_resolution_hours FROM ticket_summary WHERE resolution_hours IS NOT NULL GROUP BY category ORDER BY avg_resolution_hours DESC;
+SELECT DISTINCT customer, plan FROM ticket_summary WHERE status <> 'closed' ORDER BY customer;
+SELECT DISTINCT customer, plan, subject, priority FROM ticket_summary WHERE plan = 'business' AND status <> 'closed' ORDER BY priority DESC;
+SELECT agent, COUNT(*) AS assigned_tickets, COUNT(*) FILTER (WHERE status <> 'closed') AS active_tickets FROM ticket_summary WHERE agent IS NOT NULL GROUP BY agent ORDER BY active_tickets DESC;
+SELECT * FROM daily_support_metrics ORDER BY day;
+SELECT id, subject, customer, first_response_minutes FROM ticket_summary WHERE first_response_minutes > 60 ORDER BY first_response_minutes DESC;
+SELECT id, subject, customer, resolution_hours FROM ticket_summary WHERE resolution_hours <= 4 ORDER BY resolution_hours;
+SELECT customer, COUNT(*) AS ticket_count FROM ticket_summary GROUP BY customer ORDER BY ticket_count DESC, customer LIMIT 5;
+SELECT category, COUNT(*) AS ticket_count, ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS percent_of_total FROM tickets GROUP BY category ORDER BY ticket_count DESC;
+SELECT t.id, t.subject, e.event_type, e.event_at, e.note FROM tickets t JOIN ticket_events e ON e.ticket_id = t.id WHERE t.id = 1 ORDER BY e.event_at;
+SELECT COUNT(*) AS total_tickets, COUNT(*) FILTER (WHERE status <> 'closed') AS active_tickets, COUNT(*) FILTER (WHERE priority IN ('high', 'urgent') AND status <> 'closed') AS active_high_priority, ROUND(AVG(first_response_minutes)::numeric, 1) AS avg_first_response_minutes, ROUND(AVG(resolution_hours) FILTER (WHERE status = 'closed')::numeric, 1) AS avg_resolution_hours FROM ticket_summary;
