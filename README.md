@@ -61,8 +61,29 @@ curl -X POST http://127.0.0.1:8000/tickets \
   }'
 ```
 
-Tickets default to `priority: normal` and `status: open`. The current starter
-validates that these fields are strings; the descriptions list the intended values.
+Tickets default to `priority: normal` and `status: open`. You can also set the
+initial status while opening a ticket, then change it with `PATCH`:
+
+```bash
+curl -X POST http://127.0.0.1:8000/tickets \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "customer_name": "Ada Lovelace",
+    "subject": "Cannot sign in",
+    "description": "The password reset email never arrives.",
+    "priority": "high",
+    "status": "pending"
+  }'
+
+curl -X PATCH http://127.0.0.1:8000/tickets/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"status": "closed", "priority": "normal", "owner": "Grace Hopper"}'
+```
+
+Supported priorities are `low`, `normal`, and `high`. Supported statuses are
+`open`, `pending`, and `closed`; invalid values are rejected with a validation error.
+The optional `owner` field identifies the assigned support owner and can be set when
+creating a ticket or changed later with `PATCH`.
 
 ## Run tests
 

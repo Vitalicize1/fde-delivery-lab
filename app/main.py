@@ -1,9 +1,13 @@
 """A small in-memory customer support ticket API."""
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
+
+
+TicketPriority = Literal["low", "normal", "high"]
+TicketStatus = Literal["open", "pending", "closed"]
 
 
 class TicketCreate(BaseModel):
@@ -12,24 +16,24 @@ class TicketCreate(BaseModel):
     customer_name: str = Field(..., min_length=1, description="Name of the customer")
     subject: str = Field(..., min_length=1, description="Short description of the issue")
     description: str = Field(..., min_length=1, description="Full description of the issue")
-    priority: str = Field(default="normal", description="Ticket priority: low, normal, or high")
+    priority: TicketPriority = Field(default="normal", description="Ticket priority")
+    status: TicketStatus = Field(default="open", description="Initial ticket status")
+    owner: Optional[str] = Field(default=None, min_length=1, description="Assigned support owner")
 
 
 class Ticket(TicketCreate):
     """A support ticket returned by the API, including its generated ID."""
 
     id: int
-    status: str = Field(default="open", description="Ticket status: open, pending, or closed")
-
-
 class TicketUpdate(BaseModel):
     """Optional fields that can be changed on an existing ticket."""
 
     customer_name: Optional[str] = Field(default=None, min_length=1)
     subject: Optional[str] = Field(default=None, min_length=1)
     description: Optional[str] = Field(default=None, min_length=1)
-    priority: Optional[str] = Field(default=None, description="Ticket priority: low, normal, or high")
-    status: Optional[str] = Field(default=None, description="Ticket status: open, pending, or closed")
+    priority: Optional[TicketPriority] = Field(default=None, description="Ticket priority")
+    status: Optional[TicketStatus] = Field(default=None, description="Ticket status")
+    owner: Optional[str] = Field(default=None, min_length=1, description="Assigned support owner")
 
 
 app = FastAPI(
